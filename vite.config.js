@@ -1,25 +1,33 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import svgr from 'vite-plugin-svgr'; // Allows importing SVGs as React components
-import eslint from 'vite-plugin-eslint'; // Adds linting for better code quality
+import svgr from 'vite-plugin-svgr';
+import eslint from 'vite-plugin-eslint';
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     svgr(),
-    eslint(),
+    eslint({
+      eslintOptions: {
+        overrideConfigFile: '.eslintrc.js', // <- explicitly point to your ESLint config
+      },
+      emitWarning: true,  // show warnings in console
+      emitError: true,    // show errors in console
+      failOnWarning: false, // don’t break dev server for warnings
+      failOnError: false,   // don’t break dev server for errors
+    }),
   ],
   server: {
-    host: true, // Allows access from LAN
+    host: true,
     port: 5173,
-    strictPort: true, // Fail if port is already in use
+    strictPort: true,
     watch: {
-      usePolling: true, // Better for containerized environments
+      usePolling: true,
     },
     allowedHosts: [
-      'grub.sky0cloud.dpdns.org', // Add the host here
+      'grub.sky0cloud.dpdns.org',
     ],
   },
   resolve: {
