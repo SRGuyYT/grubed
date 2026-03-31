@@ -12,12 +12,10 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    },
+    ecmaFeatures: { jsx: true },
   },
   plugins: ['react'],
   rules: {
-    // Add your custom rules here if needed
+    // Add custom rules if needed
   },
 };
