@@ -29,14 +29,8 @@ const PROVIDER_FLOW_OPTIONS = [
   },
 ];
 
-function SegmentedOption({
-  label,
-  options,
-  value,
-  onChange,
-  renderOption,
-  columnsClass = 'sm:grid-cols-3',
-}) {
+// Generic segmented button group
+function SegmentedOption({ label, options, value, onChange, renderOption, columnsClass = 'sm:grid-cols-3' }) {
   return (
     <div className="space-y-3">
       <div className="text-sm font-semibold text-white">{label}</div>
@@ -64,23 +58,14 @@ function SegmentedOption({
   );
 }
 
-export function SettingsPage({
-  preferences,
-  onChangePreference,
-  onSavePreferences,
-  isSaving,
-  syncStatus,
-  onOpenDocs,
-  accountNode,
-}) {
+export function SettingsPage({ preferences, onChangePreference, onSavePreferences, isSaving, syncStatus, onOpenDocs, accountNode }) {
   return (
     <section className="space-y-7">
+      {/* Header Section */}
       <section className="reveal-up liquid-panel rounded-[34px] p-5 md:p-7">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.28em] text-white/38">
-              Settings
-            </div>
+            <div className="text-[11px] uppercase tracking-[0.28em] text-white/38">Settings</div>
             <h1 className="mt-2 text-3xl font-black text-white md:text-5xl">
               Tune the interface to your device.
             </h1>
@@ -88,7 +73,6 @@ export function SettingsPage({
               UI preferences save locally for guests and sync to your account when Firebase is available.
             </p>
           </div>
-
           <button
             type="button"
             onClick={onOpenDocs}
@@ -100,15 +84,14 @@ export function SettingsPage({
         </div>
       </section>
 
+      {/* Preferences Section */}
       <section className="reveal-up liquid-panel rounded-[34px] p-5 md:p-7">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white/72">
             <SlidersIcon className="h-5 w-5" />
           </div>
           <div>
-            <div className="text-[11px] uppercase tracking-[0.24em] text-white/40">
-              UI Preferences
-            </div>
+            <div className="text-[11px] uppercase tracking-[0.24em] text-white/40">UI Preferences</div>
             <div className="text-lg font-semibold text-white">Look and feel</div>
           </div>
         </div>
@@ -150,14 +133,13 @@ export function SettingsPage({
             renderOption={(option) => (
               <div>
                 <div className="text-sm font-medium text-white">{option.label}</div>
-                <div className="mt-2 text-xs leading-5 text-white/52">
-                  {option.description}
-                </div>
+                <div className="mt-2 text-xs leading-5 text-white/52">{option.description}</div>
               </div>
             )}
           />
         </div>
 
+        {/* Save Section */}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="rounded-[22px] border border-white/10 bg-black/[0.24] px-4 py-3 text-sm text-white/58">
             {syncStatus}
@@ -173,6 +155,7 @@ export function SettingsPage({
         </div>
       </section>
 
+      {/* Account Node */}
       {accountNode}
     </section>
   );
