@@ -6,7 +6,6 @@ import { WatchlistProvider } from './context/WatchlistContext';
 import App from './App';
 import './index.css';
 
-// Wrap the app with Router and global context providers
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
