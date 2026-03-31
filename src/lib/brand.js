@@ -1,6 +1,12 @@
-export const BRAND_NAME = 'Grubed';
-export const BRAND_ICON_512 = 'https://grub.sky0cloud.dpdns.org/512x512.png';
-export const BRAND_ICON_128 = 'https://grub.sky0cloud.dpdns.org/128x128.png';
-export const BRAND_ICON_64 = 'https://grub.sky0cloud.dpdns.org/64x64.png';
-export const BRAND_FAVICON = 'https://grub.sky0cloud.dpdns.org/favicon.ico';
-export const GUEST_SCOPE = 'guest';
+import { BRAND_NAME, BRAND_ICON_128, GUEST_SCOPE } from './brand';
+
+// Display brand name in the header
+document.querySelector('#app-name').textContent = BRAND_NAME;
+
+// Set favicon dynamically
+const link = document.querySelector("link[rel*='icon']");
+link.href = BRAND_FAVICON;
+
+// Load guest preferences or watchlist
+const prefs = loadPreferences(GUEST_SCOPE);
+const watchlist = loadWatchlist(GUEST_SCOPE);
