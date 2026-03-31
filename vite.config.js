@@ -12,24 +12,11 @@ export default defineConfig({
     eslint(),
   ],
   server: {
-    host: true, // Allows access from LAN, simpler than '0.0.0.0'
+    host: true, // Allows access from LAN
     port: 5173,
-    strictPort: true, // Fail if the port is already in use
+    strictPort: true, // Fail if port is already in use
     watch: {
-      usePolling: true, // Better for some containerized environments
-export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    svgr(),
-    eslint(),
-  ],
-  server: {
-    host: true,
-    port: 5173,
-    strictPort: true,
-    watch: {
-      usePolling: true,
+      usePolling: true, // Better for containerized environments
     },
     allowedHosts: [
       'grub.sky0cloud.dpdns.org', // Add the host here
