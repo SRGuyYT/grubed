@@ -1,5 +1,11 @@
+/**
+ * Sections where search functionality is enabled
+ */
 export const SEARCHABLE_SECTIONS = new Set(['home', 'movies', 'series']);
 
+/**
+ * Feed configuration for infinite-scroll media browsing
+ */
 export const FEED_CONFIG = {
   movies: {
     endpoint: '/movie/popular',
