@@ -2,25 +2,24 @@ import { MediaCard } from './MediaCard';
 
 export function MediaRow({
   row,
-  continueMap,
-  watchlistMap,
+  continueMap = {},
+  watchlistMap = {},
   onPlay,
   onOpenDetails,
   onToggleWatchlist,
   onSeeAll,
-  isExpanded,
+  isExpanded = false,
   delay = 0,
   showSeeAll = true,
 }) {
-  if (!row.items?.length) {
-    return null;
-  }
+  if (!row?.items?.length) return null;
 
   return (
     <section
       className="reveal-up space-y-5"
       style={{ animationDelay: `${delay}ms` }}
     >
+      {/* Row header */}
       <div className="flex items-end justify-between gap-4">
         <div className="max-w-xl">
           <div className="text-[11px] uppercase tracking-[0.28em] text-white/38">
@@ -29,12 +28,13 @@ export function MediaRow({
           <h2 className="mt-2 text-2xl font-black text-white md:text-3xl">
             {row.title}
           </h2>
-          {row.description ? (
+          {row.description && (
             <p className="mt-2 text-sm leading-7 text-white/58">{row.description}</p>
-          ) : null}
+          )}
         </div>
 
-        {showSeeAll ? (
+        {/* See All / Hide button */}
+        {showSeeAll && (
           <button
             type="button"
             onClick={() => onSeeAll(row.id)}
@@ -42,21 +42,28 @@ export function MediaRow({
           >
             {isExpanded ? 'Hide' : 'See All'}
           </button>
-        ) : null}
+        )}
       </div>
 
+      {/* Media cards carousel */}
       <div className="no-scrollbar flex gap-4 overflow-x-auto pb-3">
-        {row.items.map((item) => (
-          <MediaCard
-            key={`${row.id}-${item.mediaType}-${item.id}`}
-            item={item}
-            progress={continueMap[`${item.mediaType}_${item.id}`]}
-            isWatchlisted={Boolean(watchlistMap?.[`${item.mediaType}_${item.id}`])}
-            onPlay={onPlay}
-            onOpenDetails={onOpenDetails}
-            onToggleWatchlist={onToggleWatchlist}
-          />
-        ))}
+        {row.items.map((item) => {
+          const key = `${row.id}-${item.mediaType}-${item.id}`;
+          const progress = continueMap[`${item.mediaType}_${item.id}`];
+          const isWatchlisted = Boolean(watchlistMap?.[`${item.mediaType}_${item.id}`]);
+
+          return (
+            <MediaCard
+              key={key}
+              item={item}
+              progress={progress}
+              isWatchlisted={isWatchlisted}
+              onPlay={onPlay}
+              onOpenDetails={onOpenDetails}
+              onToggleWatchlist={onToggleWatchlist}
+            />
+          );
+        })}
       </div>
     </section>
   );
