@@ -23,6 +23,7 @@ export function MediaCard({
         fullWidth ? 'w-full' : 'w-[184px] shrink-0 md:w-[212px]'
       }`}
     >
+      {/* Poster / Clickable area */}
       <button
         type="button"
         onClick={() => onOpenDetails(item)}
@@ -40,19 +41,23 @@ export function MediaCard({
           </div>
         )}
 
+        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.95),rgba(0,0,0,0.18)_50%,transparent)]" />
 
+        {/* Media type label */}
         <div className="absolute left-3 top-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-white/65">
           <span className="rounded-full border border-white/10 bg-black/[0.35] px-2.5 py-1">
             {item.mediaType === 'tv' ? 'Series' : 'Movie'}
           </span>
         </div>
 
+        {/* Play button overlay */}
         <div className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/[0.45] text-white/80 transition-colors group-hover:text-white">
           <PlayIcon className="h-4 w-4" />
         </div>
 
-        {progress ? (
+        {/* Resume progress */}
+        {progress && (
           <div className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-black/[0.55] px-3 py-2 backdrop-blur-xl">
             <div className="flex items-center justify-between gap-3 text-[10px] uppercase tracking-[0.22em] text-white/52">
               <span>Resume</span>
@@ -65,9 +70,10 @@ export function MediaCard({
               />
             </div>
           </div>
-        ) : null}
+        )}
       </button>
 
+      {/* Title, year, rating */}
       <div className="space-y-4 p-4">
         <div className="space-y-2">
           <div className="line-clamp-2 text-sm font-semibold text-white">
@@ -82,6 +88,7 @@ export function MediaCard({
           </div>
         </div>
 
+        {/* Action buttons */}
         <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
           <button
             type="button"
