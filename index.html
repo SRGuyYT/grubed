@@ -1,28 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Grubed is an moive streaming interface with account sync, watchlists and theater playback."
-    />
+    <meta name="description" content="Grubed is a movie streaming platform with account sync, watchlists, and theater playback." />
+
+    <!-- Favicon and Apple Touch Icons -->
     <link rel="icon" href="https://grub.sky0cloud.dpdns.org/favicon.ico" sizes="32x32" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="64x64"
-      href="https://grub.sky0cloud.dpdns.org/64x64.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="128x128"
-      href="https://grub.sky0cloud.dpdns.org/128x128.png"
-    />
+    <link rel="icon" type="image/png" sizes="64x64" href="https://grub.sky0cloud.dpdns.org/64x64.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="https://grub.sky0cloud.dpdns.org/128x128.png" />
+
+    <!-- Open Graph / Social Media Sharing -->
+    <meta property="og:title" content="Grubed – Movie Streaming Platform" />
+    <meta property="og:description" content="Watch your favorite movies with account sync, watchlists, and theater playback." />
+    <meta property="og:image" content="https://grub.sky0cloud.dpdns.org/og-image.png" />
+    <meta property="og:url" content="https://grub.sky0cloud.dpdns.org" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Grubed – Movie Streaming Platform" />
+    <meta name="twitter:description" content="Watch your favorite movies with account sync, watchlists, and theater playback." />
+    <meta name="twitter:image" content="https://grub.sky0cloud.dpdns.org/og-image.png" />
+
+    <!-- Title -->
     <title>Grubed</title>
+
+    <!-- Fonts & Tailwind -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- PWA / Manifest (optional future improvement) -->
+    <!-- <link rel="manifest" href="/manifest.json"> -->
+
   </head>
-  <body>
+  <body class="bg-gray-900 text-white font-sans">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
