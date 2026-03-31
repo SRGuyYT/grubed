@@ -32,3 +32,54 @@ VITE_FIREBASE_MEASUREMENT_ID=G-S8PL45JRLH
 - Watchlist and continue-watching cache locally per user and sync to Firestore when available.
 - The theater iframe uses stall detection, compatibility retries, and sandboxing to surface provider-side playback failures more cleanly.
 - Routes: `/` (splash), `/home`, `/movies`, `/series`, `/watchlist`, `/settings`, `/docs`, and `/title/:mediaType/:id`.
+
+```bash
+.
+├── 128x128.png
+├── 512x512.png
+├── 64x64.png
+├── favicon.ico
+├── index.html
+├── package.json
+├── README.md
+├── src
+│   ├── App.jsx
+│   ├── components
+│   │   ├── AccountPage.jsx
+│   │   ├── BottomNav.jsx
+│   │   ├── BrowseFeedPage.jsx
+│   │   ├── DetailPage.jsx
+│   │   ├── DocsPage.jsx
+│   │   ├── FilterBar.jsx
+│   │   ├── HeroSlider.jsx
+│   │   ├── HomePage.jsx
+│   │   ├── icons.jsx
+│   │   ├── MediaCard.jsx
+│   │   ├── MediaRow.jsx
+│   │   ├── NotificationCenter.jsx
+│   │   ├── SettingsPage.jsx
+│   │   ├── Sidebar.jsx
+│   │   ├── SplashScreen.jsx
+│   │   ├── TheaterOverlay.jsx
+│   │   ├── TopBar.jsx
+│   │   └── WatchlistPage.jsx
+│   ├── index.css
+│   ├── lib
+│   │   ├── appConfig.js
+│   │   ├── appHelpers.js
+│   │   ├── auth.js
+│   │   ├── brand.js
+│   │   ├── cloudLibrary.js
+│   │   ├── continueWatching.js
+│   │   ├── errors.js
+│   │   ├── firebase.js
+│   │   ├── playerBridge.js
+│   │   ├── preferences.js
+│   │   ├── routes.js
+│   │   ├── tmdb.js
+│   │   └── watchlist.js
+│   └── main.jsx
+└── vite.config.js
+
+4 directories, 42 files
+```
