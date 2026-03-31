@@ -2,14 +2,14 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import svgr from 'vite-plugin-svgr';
-import eslint from 'vite-plugin-eslint';
+// import eslint from 'vite-plugin-eslint'; // temporarily disable
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     svgr(),
-    eslint(), // default plugin; will auto-detect .eslintrc.js
+    // eslint(),
   ],
   server: {
     host: true,
