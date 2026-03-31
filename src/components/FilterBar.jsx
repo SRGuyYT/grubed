@@ -2,6 +2,7 @@ export function FilterBar({ filters, genres, onChange, onReset }) {
   return (
     <section className="glass-panel reveal-up rounded-[28px] p-4 md:p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        {/* Header */}
         <div>
           <div className="text-[11px] uppercase tracking-[0.28em] text-white/38">
             Filter Bar
@@ -11,14 +12,16 @@ export function FilterBar({ filters, genres, onChange, onReset }) {
           </h2>
         </div>
 
+        {/* Filters */}
         <div className="grid gap-3 md:grid-cols-3 xl:min-w-[760px]">
+          {/* Genre Filter */}
           <label className="space-y-2">
             <span className="text-[11px] uppercase tracking-[0.22em] text-white/42">
               Genre
             </span>
             <select
               value={filters.genre}
-              onChange={(event) => onChange('genre', event.target.value)}
+              onChange={(e) => onChange('genre', e.target.value)}
               className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white focus:border-white/20 focus:outline-none"
             >
               <option value="all">All Genres</option>
@@ -30,13 +33,14 @@ export function FilterBar({ filters, genres, onChange, onReset }) {
             </select>
           </label>
 
+          {/* Release Year Filter */}
           <label className="space-y-2">
             <span className="text-[11px] uppercase tracking-[0.22em] text-white/42">
               Release Year
             </span>
             <select
               value={filters.year}
-              onChange={(event) => onChange('year', event.target.value)}
+              onChange={(e) => onChange('year', e.target.value)}
               className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white focus:border-white/20 focus:outline-none"
             >
               <option value="curated">Curated</option>
@@ -45,6 +49,7 @@ export function FilterBar({ filters, genres, onChange, onReset }) {
             </select>
           </label>
 
+          {/* Rating Filter + Reset */}
           <label className="space-y-2">
             <span className="text-[11px] uppercase tracking-[0.22em] text-white/42">
               Rating
@@ -52,7 +57,7 @@ export function FilterBar({ filters, genres, onChange, onReset }) {
             <div className="flex gap-3">
               <select
                 value={filters.rating}
-                onChange={(event) => onChange('rating', event.target.value)}
+                onChange={(e) => onChange('rating', e.target.value)}
                 className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white focus:border-white/20 focus:outline-none"
               >
                 <option value="curated">Curated</option>
