@@ -30,28 +30,22 @@ export function DetailPage({
 
       try {
         const data = await fetchTitleBundle(mediaType, id);
-
-        if (!cancelled) {
-          setBundle(data);
-        }
+        if (!cancelled) setBundle(data);
       } catch (detailError) {
         if (!cancelled) {
           setError(
             detailError instanceof Error
               ? detailError.message
-              : 'Title details could not be loaded.',
+              : 'Title details could not be loaded.'
           );
           setBundle(null);
         }
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        if (!cancelled) setIsLoading(false);
       }
     }
 
     loadBundle();
-
     return () => {
       cancelled = true;
     };
@@ -87,18 +81,20 @@ export function DetailPage({
 
   return (
     <section className="space-y-8">
-      <section className="reveal-up relative overflow-hidden rounded-[36px] border border-white/10 shadow-[0_32px_120px_rgba(0,0,0,0.45)]">
-        {details.backdropPath ? (
+      {/* Poster & Metadata */}
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-[280px_minmax(0,1fr)] xl:p-14 reveal-up relative overflow-hidden rounded-[36px] border border-white/10 shadow-[0_32px_120px_rgba(0,0,0,0.45)]">
+        {details.backdropPath && (
           <img
             src={buildImageUrl(details.backdropPath, 'original')}
             alt={details.title}
             className="absolute inset-0 h-full w-full object-cover"
           />
-        ) : null}
+        )}
         <div className="absolute inset-0 bg-[linear-gradient(to_top,#000_10%,rgba(0,0,0,0.76)_45%,rgba(0,0,0,0.22)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(229,9,20,0.26),transparent_36%)]" />
 
-        <div className="relative grid gap-8 p-6 md:p-10 xl:grid-cols-[280px_minmax(0,1fr)] xl:p-14">
+        <div className="relative grid gap-8 p-6 md:p-10">
+          {/* Poster column */}
           <div className="space-y-4">
             <button
               type="button"
@@ -122,14 +118,15 @@ export function DetailPage({
             </div>
           </div>
 
+          {/* Details column */}
           <div className="flex flex-col justify-end">
             <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-white/55">
               <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1">
                 {details.mediaType === 'tv' ? 'Series' : 'Movie'}
               </span>
               <span>{getReleaseYear(details)}</span>
-              {details.runtime ? <span>{details.runtime} min</span> : null}
-              {details.numberOfSeasons ? <span>{details.numberOfSeasons} seasons</span> : null}
+              {details.runtime && <span>{details.runtime} min</span>}
+              {details.numberOfSeasons && <span>{details.numberOfSeasons} seasons</span>}
               <span className="flex items-center gap-1 text-white/80">
                 <StarIcon className="h-3.5 w-3.5 text-[#e50914]" />
                 {details.voteAverage.toFixed(1)}
@@ -139,9 +136,9 @@ export function DetailPage({
             <h1 className="mt-4 text-4xl font-black text-white md:text-6xl">
               {details.title}
             </h1>
-            {details.tagline ? (
+            {details.tagline && (
               <p className="mt-3 text-lg text-white/62">{details.tagline}</p>
-            ) : null}
+            )}
             <p className="mt-5 max-w-3xl text-sm leading-7 text-white/68 md:text-base">
               {details.overview}
             </p>
@@ -181,15 +178,15 @@ export function DetailPage({
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_420px]">
+      {/* Trailer & Cast */}
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.2fr)_420px]">
+        {/* Trailer */}
         <div className="glass-panel reveal-up overflow-hidden rounded-[32px]">
           <div className="border-b border-white/10 px-5 py-4">
-            <div className="text-[11px] uppercase tracking-[0.24em] text-white/40">
-              Trailer
-            </div>
+            <div className="text-[11px] uppercase tracking-[0.24em] text-white/40">Trailer</div>
             <div className="mt-1 text-lg font-semibold text-white">Preview</div>
           </div>
-          <div className="aspect-video bg-black">
+          <div className="aspect-video bg-black flex items-center justify-center text-white/60">
             {trailerKey ? (
               <iframe
                 title={`${details.title} trailer`}
@@ -204,14 +201,15 @@ export function DetailPage({
                 alt={details.title}
                 className="h-full w-full object-cover"
               />
-            ) : null}
+            ) : (
+              <span className="text-sm font-medium">Trailer not available</span>
+            )}
           </div>
         </div>
 
+        {/* Cast */}
         <div className="glass-panel reveal-up rounded-[32px] p-5">
-          <div className="text-[11px] uppercase tracking-[0.24em] text-white/40">
-            Cast
-          </div>
+          <div className="text-[11px] uppercase tracking-[0.24em] text-white/40">Cast</div>
           <div className="mt-4 space-y-3">
             {cast.length ? (
               cast.map((person) => (
@@ -220,18 +218,16 @@ export function DetailPage({
                   className="flex items-center gap-3 rounded-[24px] border border-white/10 bg-white/[0.03] p-3"
                 >
                   <div className="h-16 w-16 overflow-hidden rounded-2xl bg-white/[0.04]">
-                    {person.profilePath ? (
+                    {person.profilePath && (
                       <img
                         src={buildImageUrl(person.profilePath, 'w185')}
                         alt={person.name}
                         className="h-full w-full object-cover"
                       />
-                    ) : null}
+                    )}
                   </div>
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-white">
-                      {person.name}
-                    </div>
+                    <div className="truncate text-sm font-semibold text-white">{person.name}</div>
                     <div className="mt-1 truncate text-[11px] uppercase tracking-[0.22em] text-white/44">
                       {person.character}
                     </div>
@@ -245,6 +241,7 @@ export function DetailPage({
         </div>
       </section>
 
+      {/* Recommendations */}
       {recommendations.length ? (
         <MediaRow
           row={{
