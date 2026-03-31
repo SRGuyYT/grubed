@@ -1,7 +1,14 @@
+/* -----------------------------
+   Google Fonts
+----------------------------- */
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap");
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+
+/* -----------------------------
+   Tailwind Directives
+----------------------------- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* -----------------------------
    Root Variables & Themes
@@ -38,11 +45,16 @@
 /* -----------------------------
    Global Reset & Base Styles
 ----------------------------- */
-*,
-*::before,
-*::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
 
 body {
   min-height: 100vh;
@@ -56,8 +68,10 @@ body {
   overflow-x: hidden;
 }
 
-/* Selection & Form Elements */
-::selection { background-color: rgba(229, 9, 20, 0.5); color: #fff; }
+::selection {
+  background-color: rgba(229, 9, 20, 0.5);
+  color: #fff;
+}
 
 button, input, select, textarea {
   font-family: inherit;
@@ -155,9 +169,6 @@ button, input, select, textarea {
 @media(min-width:1024px){.movie-grid{grid-template-columns:repeat(5,1fr);}}
 @media(min-width:1280px){.movie-grid{grid-template-columns:repeat(6,1fr);}}
 
-/* -----------------------------
-   Accessibility & Motion
------------------------------ */
 @media(prefers-reduced-motion: reduce){
   * { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
 }
