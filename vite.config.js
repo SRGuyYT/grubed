@@ -17,7 +17,23 @@ export default defineConfig({
     strictPort: true, // Fail if the port is already in use
     watch: {
       usePolling: true, // Better for some containerized environments
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+    svgr(),
+    eslint(),
+  ],
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+    watch: {
+      usePolling: true,
     },
+    allowedHosts: [
+      'grub.sky0cloud.dpdns.org', // Add the host here
+    ],
   },
   resolve: {
     alias: {
@@ -29,7 +45,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true, // Helps debugging production builds
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks(id) {
