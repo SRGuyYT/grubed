@@ -27,7 +27,7 @@ export function BottomNav({ activeSection, watchlistCount, onNavigate }) {
               key={item.id}
               type="button"
               onClick={() => onNavigate(item.id)}
-              className={`relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-[22px] px-3 py-2 text-[11px] font-medium transition-all duration-300 ${
+              className={`relative flex flex-1 flex-col items-center justify-center gap-1 rounded-[22px] px-3 py-2 text-[11px] font-medium transition-all duration-300 ${
                 isActive
                   ? 'bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_16px_30px_rgba(0,0,0,0.18)]'
                   : 'text-white/54 hover:bg-white/[0.05] hover:text-white'
@@ -35,11 +35,12 @@ export function BottomNav({ activeSection, watchlistCount, onNavigate }) {
             >
               <Icon className="h-5 w-5" />
               <span className="truncate">{item.label}</span>
-              {item.id === 'watchlist' && watchlistCount > 0 ? (
-                <span className="absolute right-3 top-2 rounded-full bg-[#e50914] px-1.5 py-0.5 text-[9px] font-bold text-white">
+
+              {item.id === 'watchlist' && watchlistCount > 0 && (
+                <span className="absolute -top-1 right-2 rounded-full bg-[#e50914] px-1.5 py-0.5 text-[9px] font-bold text-white">
                   {watchlistCount}
                 </span>
-              ) : null}
+              )}
             </button>
           );
         })}
