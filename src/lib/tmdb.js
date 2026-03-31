@@ -5,21 +5,22 @@ export const TMDB_API_KEY =
 export const TMDB_API_BASE = `${TMDB_PROXY_BASE.replace(/\/$/, '')}/3`;
 export const IMAGE_BASE = 'https://image.tmdb.org/t/p';
 
+/** -----------------------------
+ *  Helper Functions
+ ----------------------------- */
 function buildUrl(path, params = {}) {
   const resolvedPath = path.startsWith('http')
     ? path
     : `${TMDB_API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
-  const url = new URL(resolvedPath);
 
+  const url = new URL(resolvedPath);
   url.searchParams.set('api_key', TMDB_API_KEY);
   url.searchParams.set('language', 'en-US');
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') {
-      return;
+    if (value !== undefined && value !== null && value !== '') {
+      url.searchParams.set(key, String(value));
     }
-
-    url.searchParams.set(key, String(value));
   });
 
   return url.toString();
@@ -27,28 +28,16 @@ function buildUrl(path, params = {}) {
 
 async function request(path, params = {}) {
   const response = await fetch(buildUrl(path, params));
-
-  if (!response.ok) {
-    throw new Error(`TMDB proxy request failed with status ${response.status}.`);
-  }
-
+  if (!response.ok) throw new Error(`TMDB request failed: ${response.status}`);
   return response.json();
 }
 
 function dedupeMediaItems(items) {
   const seen = new Set();
-
   return items.filter((item) => {
-    if (!item) {
-      return false;
-    }
-
+    if (!item) return false;
     const key = `${item.mediaType}_${item.id}`;
-
-    if (seen.has(key)) {
-      return false;
-    }
-
+    if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
@@ -59,14 +48,12 @@ function normalizeMediaItem(item, forcedType = 'all') {
     forcedType !== 'all'
       ? forcedType
       : item.media_type
-        ? item.media_type
-        : item.first_air_date && !item.release_date
-          ? 'tv'
-          : 'movie';
+      ? item.media_type
+      : item.first_air_date && !item.release_date
+      ? 'tv'
+      : 'movie';
 
-  if ((mediaType !== 'movie' && mediaType !== 'tv') || !item.id) {
-    return null;
-  }
+  if (!['movie', 'tv'].includes(mediaType) || !item.id) return null;
 
   return {
     id: item.id,
@@ -84,17 +71,11 @@ function normalizeMediaItem(item, forcedType = 'all') {
 
 function normalizeDetailedItem(item, mediaType) {
   const base = normalizeMediaItem(item, mediaType);
-
-  if (!base) {
-    return null;
-  }
+  if (!base) return null;
 
   return {
     ...base,
-    genres: (item.genres ?? []).map((genre) => ({
-      id: genre.id,
-      name: genre.name,
-    })),
+    genres: (item.genres ?? []).map((g) => ({ id: g.id, name: g.name })),
     tagline: item.tagline || '',
     runtime: item.runtime ?? item.episode_run_time?.[0] ?? null,
     numberOfSeasons: item.number_of_seasons ?? null,
@@ -102,65 +83,53 @@ function normalizeDetailedItem(item, mediaType) {
   };
 }
 
+/** -----------------------------
+ *  Public API
+ ----------------------------- */
 export async function fetchMediaList(endpoint, mediaType = 'all', params = {}) {
   const data = await request(endpoint, params);
-
   return dedupeMediaItems(
-    (data.results ?? [])
-      .map((item) => normalizeMediaItem(item, mediaType))
-      .filter(Boolean),
+    (data.results ?? []).map((i) => normalizeMediaItem(i, mediaType)).filter(Boolean)
   );
 }
 
 export async function searchCatalog(query, scope = 'multi') {
   const endpoint =
-    scope === 'movie'
-      ? '/search/movie'
-      : scope === 'tv'
-        ? '/search/tv'
-        : '/search/multi';
-
-  const data = await request(endpoint, {
-    query,
-    include_adult: false,
-  });
+    scope === 'movie' ? '/search/movie' : scope === 'tv' ? '/search/tv' : '/search/multi';
+  const data = await request(endpoint, { query, include_adult: false });
 
   return dedupeMediaItems(
-    (data.results ?? [])
-      .map((item) => normalizeMediaItem(item, scope === 'multi' ? 'all' : scope))
-      .filter(Boolean),
+    (data.results ?? []).map((i) => normalizeMediaItem(i, scope === 'multi' ? 'all' : scope)).filter(Boolean)
   );
 }
 
 export async function fetchTvDetails(id) {
   const data = await request(`/tv/${id}`);
-
   return {
     id: data.id,
     numberOfSeasons: data.number_of_seasons ?? 0,
     seasons: (data.seasons ?? [])
-      .filter((season) => season.season_number > 0)
-      .map((season) => ({
-        seasonNumber: season.season_number,
-        name: season.name,
-        episodeCount: season.episode_count ?? 0,
+      .filter((s) => s.season_number > 0)
+      .map((s) => ({
+        seasonNumber: s.season_number,
+        name: s.name,
+        episodeCount: s.episode_count ?? 0,
       })),
   };
 }
 
 export async function fetchTvSeason(id, seasonNumber) {
   const data = await request(`/tv/${id}/season/${seasonNumber}`);
-
   return {
     id: data.id,
     seasonNumber: data.season_number,
     name: data.name,
-    episodes: (data.episodes ?? []).map((episode) => ({
-      id: episode.id,
-      episodeNumber: episode.episode_number,
-      name: episode.name,
-      overview: episode.overview || 'No synopsis available yet.',
-      stillPath: episode.still_path ?? null,
+    episodes: (data.episodes ?? []).map((ep) => ({
+      id: ep.id,
+      episodeNumber: ep.episode_number,
+      name: ep.name,
+      overview: ep.overview || 'No synopsis available yet.',
+      stillPath: ep.still_path ?? null,
     })),
   };
 }
@@ -177,7 +146,6 @@ export async function fetchTitleDetails(mediaType, id) {
 
 export async function fetchTitleCredits(mediaType, id) {
   const data = await request(`/${mediaType}/${id}/credits`);
-
   return (data.cast ?? []).slice(0, 16).map((person) => ({
     id: person.id,
     name: person.name,
@@ -193,11 +161,8 @@ export async function fetchTitleVideos(mediaType, id) {
 
 export async function fetchTitleRecommendations(mediaType, id) {
   const data = await request(`/${mediaType}/${id}/recommendations`);
-
   return dedupeMediaItems(
-    (data.results ?? [])
-      .map((item) => normalizeMediaItem(item, mediaType))
-      .filter(Boolean),
+    (data.results ?? []).map((i) => normalizeMediaItem(i, mediaType)).filter(Boolean)
   );
 }
 
@@ -210,15 +175,10 @@ export async function fetchTitleBundle(mediaType, id) {
   ]);
 
   const trailer =
-    videos.find((video) => video.site === 'YouTube' && video.type === 'Trailer') ||
-    videos.find((video) => video.site === 'YouTube');
+    videos.find((v) => v.site === 'YouTube' && v.type === 'Trailer') ||
+    videos.find((v) => v.site === 'YouTube');
 
-  return {
-    details,
-    cast,
-    trailerKey: trailer?.key ?? '',
-    recommendations,
-  };
+  return { details, cast, trailerKey: trailer?.key ?? '', recommendations };
 }
 
 export function buildImageUrl(path, size = 'original') {
