@@ -23,6 +23,7 @@ export function HomePage({
 
   return (
     <section className="space-y-7">
+      {/* Hero / Welcome & Search */}
       <section className="reveal-up liquid-panel rounded-[34px] p-5 md:p-7">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -49,15 +50,17 @@ export function HomePage({
         </div>
       </section>
 
-      {!showSearch && featuredItems.length ? (
+      {/* Featured slider */}
+      {!showSearch && featuredItems.length > 0 && (
         <HeroSlider
           items={featuredItems}
           continueMap={continueMap}
           onPlay={onPlay}
           onOpenDetails={onOpenDetails}
         />
-      ) : null}
+      )}
 
+      {/* Search results */}
       {showSearch ? (
         <section className="reveal-up space-y-5">
           <div className="flex items-center gap-3">
@@ -65,14 +68,16 @@ export function HomePage({
               <SparklesIcon className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-[11px] uppercase tracking-[0.24em] text-white/40">Search</div>
+              <div className="text-[11px] uppercase tracking-[0.24em] text-white/40">
+                Search
+              </div>
               <div className="text-lg font-semibold text-white">
                 Results for "{query.trim()}"
               </div>
             </div>
           </div>
 
-          {searchResults.length ? (
+          {searchResults.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {searchResults.map((item) => (
                 <MediaCard
@@ -95,12 +100,14 @@ export function HomePage({
         </section>
       ) : (
         <>
-          {inlineError ? (
+          {/* Inline error */}
+          {inlineError && (
             <div className="liquid-panel rounded-[28px] p-6 text-sm leading-7 text-white/64">
               {inlineError}
             </div>
-          ) : null}
+          )}
 
+          {/* Loading state */}
           {isLoading ? (
             <div className="liquid-panel rounded-[28px] p-6 text-sm text-white/60">
               Loading your home feed...
