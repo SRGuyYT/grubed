@@ -1,15 +1,19 @@
-import { useEffect, useEffectEvent, useState } from 'react';
+import { useEffect, useEffectEvent, useState, useRef } from 'react';
 import { buildImageUrl } from '../lib/tmdb';
 import { getProgressPercent } from '../lib/playerBridge';
 import { ChevronRightIcon, PlayIcon, StarIcon } from './icons';
 
 function getReleaseYear(item) {
-  return item.releaseDate ? new Date(item.releaseDate).getFullYear() : 'Now';
+  return item.releaseDate ? new Date(item.releaseDate).getFullYear() : 'Coming Soon';
 }
 
 export function HeroSlider({ items, continueMap, onPlay, onOpenDetails }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const sliderRef = useRef(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
+  // Reset index if items change
   useEffect(() => {
     setActiveIndex(0);
   }, [items.length, items[0]?.id]);
@@ -18,43 +22,61 @@ export function HeroSlider({ items, continueMap, onPlay, onOpenDetails }) {
     setActiveIndex((current) => (current + 1) % items.length);
   });
 
+  // Autoplay interval
   useEffect(() => {
-    if (items.length < 2) {
-      return undefined;
-    }
-
-    const interval = window.setInterval(() => {
-      advanceSlide();
-    }, 6500);
-
-    return () => {
-      window.clearInterval(interval);
-    };
+    if (items.length < 2) return;
+    const interval = window.setInterval(advanceSlide, 6500);
+    return () => window.clearInterval(interval);
   }, [advanceSlide, items.length]);
 
-  const activeItem = items[activeIndex];
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'ArrowRight') setActiveIndex((prev) => (prev + 1) % items.length);
+      if (e.key === 'ArrowLeft') setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [items.length]);
 
-  if (!activeItem) {
-    return null;
-  }
+  // Touch handlers for swipe
+  const handleTouchStart = (e) => (touchStartX.current = e.touches[0].clientX);
+  const handleTouchMove = (e) => (touchEndX.current = e.touches[0].clientX);
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 50) setActiveIndex((prev) => (prev + 1) % items.length); // swipe left → next
+    if (diff < -50) setActiveIndex((prev) => (prev - 1 + items.length) % items.length); // swipe right → prev
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
+  const activeItem = items[activeIndex];
+  if (!activeItem) return null;
 
   const activeProgress = continueMap[`${activeItem.mediaType}_${activeItem.id}`];
   const progressPercent = getProgressPercent(activeProgress);
 
   return (
-    <section className="reveal-up relative min-h-[68svh] overflow-hidden rounded-[36px] border border-white/10 shadow-[0_32px_120px_rgba(0,0,0,0.45)]">
-      {activeItem.backdropPath ? (
+    <section
+      ref={sliderRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="reveal-up relative min-h-[68svh] overflow-hidden rounded-[36px] border border-white/10 shadow-[0_32px_120px_rgba(0,0,0,0.45)]"
+    >
+      {activeItem.backdropPath && (
         <img
           src={buildImageUrl(activeItem.backdropPath, 'original')}
           alt={activeItem.title}
           className="absolute inset-0 h-full w-full object-cover"
         />
-      ) : null}
+      )}
       <div className="absolute inset-0 bg-[linear-gradient(to_top,#000_14%,rgba(0,0,0,0.66)_45%,rgba(0,0,0,0.18)_100%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(229,9,20,0.26),transparent_34%)]" />
 
       <div className="relative flex min-h-[68svh] flex-col justify-end p-6 md:p-10 lg:p-14">
         <div className="max-w-3xl space-y-5">
+          {/* Metadata */}
           <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.26em] text-white/58">
             <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1">
               Grubed Spotlight
@@ -67,6 +89,7 @@ export function HeroSlider({ items, continueMap, onPlay, onOpenDetails }) {
             </span>
           </div>
 
+          {/* Title & overview */}
           <div>
             <h1 className="max-w-4xl text-4xl font-black text-white md:text-6xl lg:text-7xl">
               {activeItem.title}
@@ -76,7 +99,8 @@ export function HeroSlider({ items, continueMap, onPlay, onOpenDetails }) {
             </p>
           </div>
 
-          {activeProgress ? (
+          {/* Resume progress */}
+          {activeProgress && (
             <div className="glass-panel inline-flex max-w-md flex-col gap-2 rounded-3xl px-4 py-3 text-sm text-white/75">
               <div className="flex items-center justify-between gap-3">
                 <span>Resume synced from player bridge</span>
@@ -85,14 +109,12 @@ export function HeroSlider({ items, continueMap, onPlay, onOpenDetails }) {
                 </span>
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
-                <div
-                  className="h-full rounded-full bg-[#e50914]"
-                  style={{ width: `${progressPercent}%` }}
-                />
+                <div className="h-full rounded-full bg-[#e50914]" style={{ width: `${progressPercent}%` }} />
               </div>
             </div>
-          ) : null}
+          )}
 
+          {/* Action buttons */}
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -113,10 +135,10 @@ export function HeroSlider({ items, continueMap, onPlay, onOpenDetails }) {
           </div>
         </div>
 
+        {/* Thumbnails navigation */}
         <div className="mt-10 flex flex-wrap gap-3">
           {items.slice(0, 5).map((item, index) => {
             const isActive = index === activeIndex;
-
             return (
               <button
                 key={item.id}
@@ -127,15 +149,16 @@ export function HeroSlider({ items, continueMap, onPlay, onOpenDetails }) {
                     ? 'border-white/20 bg-white/[0.08] text-white'
                     : 'text-white/58 hover:text-white'
                 }`}
+                aria-label={`Select featured item: ${item.title}`}
               >
                 <div className="h-16 w-12 shrink-0 overflow-hidden rounded-2xl bg-white/5">
-                  {item.posterPath ? (
+                  {item.posterPath && (
                     <img
                       src={buildImageUrl(item.posterPath, 'w342')}
                       alt={item.title}
                       className="h-full w-full object-cover"
                     />
-                  ) : null}
+                  )}
                 </div>
                 <div className="min-w-0">
                   <div className="truncate text-sm font-semibold">{item.title}</div>
