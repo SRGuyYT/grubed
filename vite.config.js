@@ -9,26 +9,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
     svgr(),
-    eslint({
-      eslintOptions: {
-        overrideConfigFile: '.eslintrc.js', // <- explicitly point to your ESLint config
-      },
-      emitWarning: true,  // show warnings in console
-      emitError: true,    // show errors in console
-      failOnWarning: false, // don’t break dev server for warnings
-      failOnError: false,   // don’t break dev server for errors
-    }),
+    eslint(), // default plugin; will auto-detect .eslintrc.js
   ],
   server: {
     host: true,
     port: 5173,
     strictPort: true,
-    watch: {
-      usePolling: true,
-    },
-    allowedHosts: [
-      'grub.sky0cloud.dpdns.org',
-    ],
+    watch: { usePolling: true },
+    allowedHosts: ['grub.sky0cloud.dpdns.org'],
   },
   resolve: {
     alias: {
@@ -44,9 +32,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+          if (id.includes('node_modules')) return 'vendor';
         },
       },
     },
