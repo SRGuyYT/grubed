@@ -1,3 +1,4 @@
+/** Predefined error codes and metadata */
 export const ERROR_DEFINITIONS = {
   'VID-001': {
     title: 'Video playback failed',
@@ -43,10 +44,17 @@ export const ERROR_DEFINITIONS = {
   },
 };
 
+/** Generate a unique error ID */
 function buildId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+/**
+ * Creates a structured app error
+ * @param {string} code - Error code
+ * @param {object} overrides - Optional overrides (e.g., details)
+ * @returns {object} Structured error object
+ */
 export function createAppError(code, overrides = {}) {
   const definition = ERROR_DEFINITIONS[code] ?? ERROR_DEFINITIONS['NET-001'];
 
@@ -58,16 +66,17 @@ export function createAppError(code, overrides = {}) {
   };
 }
 
+/**
+ * Maps Firebase Auth errors to structured app errors
+ * @param {Error} error - Original error from Firebase Auth
+ * @returns {object} App error object
+ */
 export function mapAuthError(error) {
   const code = error?.code ?? '';
 
-  if (
-    code === 'auth/configuration-not-found' ||
-    code === 'auth/operation-not-allowed'
-  ) {
+  if (code === 'auth/configuration-not-found' || code === 'auth/operation-not-allowed') {
     return createAppError('AUTH-002', {
-      details:
-        error instanceof Error ? error.message : 'Authentication configuration missing.',
+      details: error instanceof Error ? error.message : 'Authentication configuration missing.',
     });
   }
 
@@ -76,6 +85,12 @@ export function mapAuthError(error) {
   });
 }
 
+/**
+ * Maps network-related errors to structured app errors
+ * @param {Error} error - Original error
+ * @param {object} overrides - Optional overrides
+ * @returns {object} App error object
+ */
 export function mapNetworkError(error, overrides = {}) {
   return createAppError('NET-001', {
     details: error instanceof Error ? error.message : 'Network request failed.',
