@@ -1,15 +1,15 @@
 const STORAGE_PREFIX = 'grubed_watchlist';
 const LEGACY_STORAGE_KEY = 'watchlist';
 
+/** -----------------------------
+ *  Storage Helpers
+ ----------------------------- */
 function getStorageKey(scopeKey = 'guest') {
   return `${STORAGE_PREFIX}:${scopeKey}`;
 }
 
 function parseMap(raw) {
-  if (!raw) {
-    return {};
-  }
-
+  if (!raw) return {};
   try {
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed : {};
@@ -18,6 +18,9 @@ function parseMap(raw) {
   }
 }
 
+/** -----------------------------
+ *  Watchlist Entry Factory
+ ----------------------------- */
 function createWatchlistEntry(item) {
   return {
     id: item.id,
@@ -33,23 +36,24 @@ function createWatchlistEntry(item) {
   };
 }
 
+/** -----------------------------
+ *  Core Persistence
+ ----------------------------- */
 export function persistWatchlistMap(map, scopeKey = 'guest') {
   localStorage.setItem(getStorageKey(scopeKey), JSON.stringify(map));
   return map;
 }
 
 export function loadWatchlist(scopeKey = 'guest') {
-  const scopedKey = getStorageKey(scopeKey);
-  const scopedValue = localStorage.getItem(scopedKey);
+  const key = getStorageKey(scopeKey);
+  const stored = localStorage.getItem(key);
 
-  if (scopedValue !== null) {
-    return parseMap(scopedValue);
-  }
+  if (stored) return parseMap(stored);
 
+  // Migrate legacy guest watchlist if exists
   if (scopeKey === 'guest') {
     const legacy = parseMap(localStorage.getItem(LEGACY_STORAGE_KEY));
-
-    if (Object.keys(legacy).length > 0) {
+    if (Object.keys(legacy).length) {
       persistWatchlistMap(legacy, scopeKey);
       localStorage.removeItem(LEGACY_STORAGE_KEY);
       return legacy;
@@ -59,28 +63,22 @@ export function loadWatchlist(scopeKey = 'guest') {
   return {};
 }
 
+/** -----------------------------
+ *  Entry Manipulation
+ ----------------------------- */
 export function saveWatchlistEntry(item, scopeKey = 'guest') {
   const current = loadWatchlist(scopeKey);
   const key = `${item.mediaType}_${item.id}`;
 
   return persistWatchlistMap(
-    {
-      ...current,
-      [key]: {
-        ...current[key],
-        ...createWatchlistEntry(item),
-      },
-    },
-    scopeKey,
+    { ...current, [key]: { ...current[key], ...createWatchlistEntry(item) } },
+    scopeKey
   );
 }
 
 export function removeWatchlistEntry(key, scopeKey = 'guest') {
   const current = loadWatchlist(scopeKey);
-
-  if (!current[key]) {
-    return current;
-  }
+  if (!current[key]) return current;
 
   const next = { ...current };
   delete next[key];
@@ -89,35 +87,29 @@ export function removeWatchlistEntry(key, scopeKey = 'guest') {
 
 export function toggleWatchlistEntryInMap(map, item) {
   const key = `${item.mediaType}_${item.id}`;
-
   if (map[key]) {
     const next = { ...map };
     delete next[key];
     return next;
   }
-
-  return {
-    ...map,
-    [key]: createWatchlistEntry(item),
-  };
+  return { ...map, [key]: createWatchlistEntry(item) };
 }
 
 export function toggleWatchlistEntry(item, scopeKey = 'guest') {
-  return persistWatchlistMap(
-    toggleWatchlistEntryInMap(loadWatchlist(scopeKey), item),
-    scopeKey,
-  );
+  const current = loadWatchlist(scopeKey);
+  const next = toggleWatchlistEntryInMap(current, item);
+  return persistWatchlistMap(next, scopeKey);
 }
 
+/** -----------------------------
+ *  Utilities
+ ----------------------------- */
 export function mergeWatchlistMaps(...maps) {
   const merged = {};
 
   maps.forEach((map) => {
     Object.entries(map ?? {}).forEach(([key, value]) => {
-      if (
-        !merged[key] ||
-        (value?.addedAt ?? 0) >= (merged[key]?.addedAt ?? 0)
-      ) {
+      if (!merged[key] || (value?.addedAt ?? 0) >= (merged[key]?.addedAt ?? 0)) {
         merged[key] = value;
       }
     });
@@ -127,10 +119,7 @@ export function mergeWatchlistMaps(...maps) {
 }
 
 export function listWatchlist(map) {
-  return Object.entries(map)
-    .map(([key, value]) => ({
-      key,
-      ...value,
-    }))
-    .sort((left, right) => (right.addedAt ?? 0) - (left.addedAt ?? 0));
+  return Object.entries(map ?? {})
+    .map(([key, value]) => ({ key, ...value }))
+    .sort((a, b) => (b.addedAt ?? 0) - (a.addedAt ?? 0));
 }
