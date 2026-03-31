@@ -1,16 +1,17 @@
 import { MediaCard } from './MediaCard';
 
 export function WatchlistPage({
-  items,
-  continueMap,
-  watchlistMap,
+  items = [],
+  continueMap = {},
+  watchlistMap = {},
   onPlay,
   onOpenDetails,
   onToggleWatchlist,
 }) {
   return (
     <section className="reveal-up space-y-6">
-      <div>
+      {/* Header */}
+      <header>
         <div className="text-[11px] uppercase tracking-[0.28em] text-white/38">
           Watchlist
         </div>
@@ -21,22 +22,26 @@ export function WatchlistPage({
           Every title you bookmarked, rendered as a dedicated grid route and synced to your
           account when Firebase is available.
         </p>
-      </div>
+      </header>
 
-      {items.length ? (
+      {/* Watchlist Grid */}
+      {items.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {items.map((item) => (
-            <MediaCard
-              key={`watchlist-${item.mediaType}-${item.id}`}
-              item={item}
-              progress={continueMap[`${item.mediaType}_${item.id}`]}
-              isWatchlisted={Boolean(watchlistMap[`${item.mediaType}_${item.id}`])}
-              fullWidth
-              onPlay={onPlay}
-              onOpenDetails={onOpenDetails}
-              onToggleWatchlist={onToggleWatchlist}
-            />
-          ))}
+          {items.map((item) => {
+            const key = `${item.mediaType}_${item.id}`;
+            return (
+              <MediaCard
+                key={`watchlist-${key}`}
+                item={item}
+                progress={continueMap[key]}
+                isWatchlisted={Boolean(watchlistMap[key])}
+                fullWidth
+                onPlay={() => onPlay(item)}
+                onOpenDetails={() => onOpenDetails(item)}
+                onToggleWatchlist={() => onToggleWatchlist(item)}
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="glass-panel rounded-[32px] p-6 text-sm text-white/64">
